@@ -1,0 +1,55 @@
+1- Create Super Admin Users api (Can only be created by co-admin user)
+2- Create Receptionist (Can only be created by admin user)
+3- Create Nurse (Can only be created by admin user)
+4- Create Doctors  (Can only be created by admin user)
+5- Create Patient Profile  (Can only be created by Receptionist user)
+6- Create Patient Vital Profile  (Can only be created by Nurse user)
+7- Edit Patient Profile (Can only be done  by receptionist user)
+8- Edit Patient Vital (Can only be done by nurse)
+9- View Patient record (doctors,nurse,patient)
+10- Remove receptionist user (Can only be done via admin user)
+11- Remove Nurse user (Can only be done via admin user)
+12- Remove Doctor user (Can only be done via admin user)
+
+
+Atif Work:
+
+1- UI routes protection
+
+
+When admin is login following pages should be dispalyed 
+
+Admin Routes:
+
+	1- Create user page
+	2- Delete and edit users page
+
+When Receptionist is login following pages should be displayed 
+
+Receptionist Page and Routes:
+
+	1- Create & edit patient profile page
+	2- List all patients
+
+When Nurse is login following pages should be displayed
+
+Nurse Page and Routes:
+
+	1- Create Patient Vital Profile
+	2- Add and edit patient vital profile
+
+When Doctor is login following pages should be displayed
+
+
+Doctor Pages and Routes:
+
+	1- Add notes and comment of patient vitals
+	2- List all patient history 
+
+
+
+
+
+
+
+
