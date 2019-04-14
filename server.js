@@ -526,7 +526,7 @@ var mrnumber = randomstring.generate({
 
 var patientmrnumber = year+'-'+month+"-"+mrnumber;
 
-res.send(mrnumber);
+res.send(patientmrnumber);
 
 
 
