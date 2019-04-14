@@ -9,6 +9,8 @@ var cookieparser = require('cookie-parser');
 var randomstring = require("randomstring");
 const secret = "HospitalRun";
 const port = 3000;
+var currentTime = new Date();
+
 
 app.use(bodyparser.urlencoded({
   extended: false
@@ -303,7 +305,7 @@ createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumbe
 
 app.post('/addpatientvitals',authorize(Roles.Nurse),function(req,res){
 
-//var mrno = req.body.patientmrno;
+
 var height = req.body.heights;
 var weight = req.body.weight;
 var bloodpressure = req.body.bloodpressure;
@@ -367,10 +369,6 @@ app.post('/getpatientdetails',authorize(Roles.Doctor),function(req,res){
 
 var patientmrnumber = req.body.patientmrnumber;
 getpatientdetails(patientmrnumber).then(function(result){
-
-//    res.writeHead(200);
-//    res.write(result);
-//    res.end();
     res.send(result);
 
 }).catch(function(err){
@@ -393,9 +391,6 @@ var patientid = req.body.patientid;
 var sqlquery = "insert into notes(notetext,notedate,patientid) values ('"+note+"','"+date+"','"+patientid+"')";
 createquery(sqlquery).then(function(result){
 
-//    res.writeHead(200);
-//    res.write(result);
-//    res.end();
      res.send(result);
 
 }).catch(function(err){
@@ -520,10 +515,16 @@ if(!err)
 
 app.get('/createmrnumber',function(req,res){
 
+var year = currentTime.getFullYear();
+var month = currentTime.getMonth() + 1 ; 
+
+
 var mrnumber = randomstring.generate({
-  length: 6,
+  length: 4,
   charset:'numeric'
 });
+
+var patientmrnumber = year+'-'+month+"-"+mrnumber;
 
 res.send(mrnumber);
 
