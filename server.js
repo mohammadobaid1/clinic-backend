@@ -515,7 +515,7 @@ if(!err)
 
 app.get('/createmrnumber',function(req,res){
 
-var year = currentTime.getFullYear();
+var year = currentTime.getFullYear().toString().substr(-2);
 var month = currentTime.getMonth() + 1 ; 
 
 
