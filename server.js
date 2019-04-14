@@ -23,7 +23,7 @@ var pool  = mysql.createPool({
   host            : 'localhost',
   user            : 'root',
   password        : '123456',
-  database        : 'hospitalrun'
+  database        : 'primesp1'
 });
 
 
@@ -67,14 +67,16 @@ var createpatient = function(patientname,fathername,age,gender,telephone1,teleph
 
 return new Promise(function(resolve,reject){
 
-            var sqlquery = "insert into patient(patientname,fathername,age,gender,telephone1,telephone2) values ('"+patientname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
+            var sqlquery = "insert into patient(patientname,fathername,age,gender,telephone1,telephone2,mr_no) values ('"+patientname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
               pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
                       connection.query(sqlquery,function(err,result){
                             if(err)
+				{		
                                 return reject('Error in inserting');
-                             resolve(result);     
+                            }
+			 resolve(result);     
                       })
               });
 
@@ -109,19 +111,21 @@ return new Promise(function(resolve,reject){
 };
 
 
-var addpatientvital = function(height,weight,bloodpressure,temperature,po2,allergiid,patientid){
+var addpatientvital = function(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergiid,patientid){
 
 
 return new Promise (function(resolve,reject){
 
-  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergieid,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+temperature+"','"+po2+"','"+allergiid+"','"+patientid+"')";
+  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergieid,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiid+"','"+patientid+"')";
    pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
                       connection.query(sqlquery,function(err,result){
-                            if(err)
+                            if(err){
+                                console.log(err);   
                                 return reject('Error in inserting');
-                             resolve(result);     
+}     
+                        resolve(result);     
                       })
               });
 
@@ -131,6 +135,74 @@ return new Promise (function(resolve,reject){
 
 
 
+var addallergie = function(allergiename){
+
+  return new Promise(function(resolve,reject){
+
+    var sqlquery = "insert into allergies(allergiename) values ('"+allergiename+"')";
+    pool.getConnection(function(err,connection){
+                    if(err)
+                        return reject('Error in connection');
+                      connection.query(sqlquery,function(err,result){
+                            if(err)
+                                return reject('Error in inserting');
+                             resolve(result);     
+                      })
+              });
+
+
+  });
+
+}
+
+
+
+var getpatientdetails = function(patientmrnumber){
+
+  return new Promise(function(resolve,reject){
+
+    var sqlquery = "select * from patient where mr_no='"+patientmrnumber+"'";
+    pool.getConnection(function(err,connection){
+                    if(err)
+                        return reject('Error in connection');
+                      connection.query(sqlquery,function(err,result){
+                            if(err){
+                                console.log(err);
+                                return reject('Error in inserting');
+                                          
+
+                          }
+
+   resolve(result);     
+                      })
+              });
+
+
+  });
+
+
+}
+
+var createquery = function(query){
+
+ return new Promise(function(resolve,reject){
+
+    pool.getConnection(function(err,connection){
+                    if(err)
+                        return reject('Error in connection');
+                      connection.query(query,function(err,result){
+                            if(err){
+                               console.log(err);  
+                                return reject('Error in inserting');
+                             }
+resolve(result);     
+                      })
+              });
+
+
+  });
+
+}
 
 
 
@@ -155,6 +227,15 @@ function authorize(roles = []){
 ];
 
 }
+
+
+app.get('/',function(req,res){
+
+	res.send("Hello World");
+
+})
+
+
 
 
 app.post('/loginuser',function(req,res){
@@ -205,12 +286,13 @@ createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumbe
 
               res.writeHead(200);
               res.write("Record Inserted")
-
+              res.end();
 
 }).catch(function(err){
 
        res.writeHead(404);
        res.write("Error");
+       res.end();
 });
 
 
@@ -221,7 +303,7 @@ createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumbe
 
 app.post('/addpatientvitals',authorize(Roles.Nurse),function(req,res){
 
-var mrno = req.body.patientmrno;
+//var mrno = req.body.patientmrno;
 var height = req.body.heights;
 var weight = req.body.weight;
 var bloodpressure = req.body.bloodpressure;
@@ -230,19 +312,98 @@ var temperature = req.body.temperature;
 var po2 = req.body.po2;
 var datetimes = req.body.datetimes;
 var allergiid = req.body.allergiid;
+var patientid = req.body.patientid;
 
 
 
-createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumber).then(function(result){
+addpatientvital(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergiid,patientid).then(function(result){
 
               res.writeHead(200);
               res.write("Record Inserted")
-
+              res.end();
 
 }).catch(function(err){
+      console.log(err);
       res.writeHead(404);
       res.write("Error");
-})
+      res.end();
+});
+
+
+
+
+});
+
+
+
+
+app.post('/createallergi',function(req,res){
+
+  var allergiename = req.body.allergiename;
+  addallergie(allergiename).then(function(result){
+              res.writeHead(200);
+              res.write("Record Inserted");
+              res.end();
+
+  }).catch(function(error){
+     res.writeHead(404);
+      res.write("Error");
+      res.end();
+
+
+  });
+
+
+
+
+});
+
+
+
+
+
+
+app.post('/getpatientdetails',authorize(Roles.Doctor),function(req,res){
+
+var patientmrnumber = req.body.patientmrnumber;
+getpatientdetails(patientmrnumber).then(function(result){
+
+//    res.writeHead(200);
+//    res.write(result);
+//    res.end();
+    res.send(result);
+
+}).catch(function(err){
+    res.writeHead(404);
+    res.write("Error");
+    res.end();
+
+});
+
+
+
+});
+
+app.post('/addnote',authorize(Roles.Doctor),function(req,res){
+
+var note = req.body.note;
+var date = req.body.date;
+var patientid = req.body.patientid;
+
+var sqlquery = "insert into notes(notetext,notedate,patientid) values ('"+note+"','"+date+"','"+patientid+"')";
+createquery(sqlquery).then(function(result){
+
+//    res.writeHead(200);
+//    res.write(result);
+//    res.end();
+     res.send(result);
+
+}).catch(function(err){
+    res.writeHead(404);
+    res.write("Error");
+    res.end();
+
+});
 
 
 
@@ -255,26 +416,15 @@ createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumbe
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-app.post('/createsuperadmin',function(req,res){
+app.post('/createuser',function(req,res){
 
 var name  = req.body.fullname;
 var password = req.body.password;
-var email = req.body.email;
-var telephone = req.body.telephone;
+var role = req.body.role;
 
 
-var sqlquery = "Insert into usertable(name,password,email,telephone,role) values ('"+name+"','"+password+"','"+email+"','"+telephone+"','Admin')" ;
+
+var sqlquery = "Insert into usertable(name,password,role) values ('"+name+"','"+password+"','"+role+"')" ;
 console.log(pool);
 pool.getConnection(function(err,connection){
 
