@@ -263,6 +263,7 @@ app.post('/loginuser',function(req,res){
                             // res.cookie('token', token, { httpOnly: true })
                             //  .sendStatus(200);
                             //  res.end();
+                            console.log(obj);
                             res.send(obj);
                            }
 
