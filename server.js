@@ -481,7 +481,7 @@ pool.getConnection(function(err,connection){
 app.post('/searchmrnumber',function(req,res){
 
 var searchmrnumber = req.body.searchmrnumber;
-var sqlquery = "select * from patient where mrnumber='"+searchmrnumber+"' or telephone1='"+searchmrnumber+"' or telephone2='"+searchmrnumber+"'";
+var sqlquery = "select * from patient where mr_no='"+searchmrnumber+"' or telephone1='"+searchmrnumber+"' or telephone2='"+searchmrnumber+"'";
 createquery(sqlquery).then(function(result){
     res.send(result);
 
