@@ -258,7 +258,7 @@ app.post('/loginuser',function(req,res){
                             var obj = {
                               'token':token,
                               'username': username,
-                              'roles':role
+                              'roles':roles
                             }
                             // res.cookie('token', token, { httpOnly: true })
                             //  .sendStatus(200);
