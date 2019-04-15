@@ -195,7 +195,7 @@ var createquery = function(query){
                       connection.query(query,function(err,result){
                             if(err){
                                console.log(err);  
-                                return reject('Error in inserting');
+                                return reject('Error');
                              }
 resolve(result);     
                       })
@@ -255,9 +255,15 @@ app.post('/loginuser',function(req,res){
   
                       if (returnpassword == password){
                             var token = jwt.sign({userid:userid,username:username,role:roles}, secret);
-                            res.cookie('token', token, { httpOnly: true })
-                             .sendStatus(200);
-                             res.end();
+                            var obj = {
+                              'token':token,
+                              'username': username,
+                              'roles':role
+                            }
+                            // res.cookie('token', token, { httpOnly: true })
+                            //  .sendStatus(200);
+                            //  res.end();
+                            res.send(obj);
                            }
 
                        else {
@@ -464,6 +470,25 @@ pool.getConnection(function(err,connection){
 
 });
 
+
+app.post('/searchmrnumber',function(req,res){
+
+var searchmrnumber = req.body.searchmrnumber;
+var sqlquery = "select * from patient where mrnumber='"+searchmrnumber+"' or telephone1='"+serchmrnumber+"' or telephone2='"+searchmrnumber+"'";
+createquery(sqlquery).then(function(result){
+    res.send(result);
+
+}).catch(function(err){
+    res.writeHead(404);
+    res.write("Error");
+    res.end();
+
+
+});
+
+
+
+});
 
 
 
