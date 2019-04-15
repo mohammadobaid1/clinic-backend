@@ -265,6 +265,7 @@ app.post('/loginuser',function(req,res){
                             //  res.end();
                             res.writeHead(200);
                             res.write(JSON.stringify(obj));
+                            res.end();
                            }
 
                        else {
