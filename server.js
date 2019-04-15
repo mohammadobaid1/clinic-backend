@@ -274,7 +274,12 @@ app.post('/loginuser',function(req,res){
                          res.end();
                        }     
 
-  }).catch((err) => setImmediate(() => { res.writeHead(404);res.end();  }));
+  }).catch(function(err){
+    console.log(err);
+    res.writeHead(404);
+    res.write('Error');
+    res.end();
+  })
 
 
 });
