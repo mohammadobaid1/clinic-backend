@@ -53,7 +53,7 @@ var loginfunction = function(username,password,rolename){
                              if(!result.length){
                                      return reject('Error in fetch');
                              }
-
+                             console.log(result);  
                              resolve(result);     
                       })
               });
