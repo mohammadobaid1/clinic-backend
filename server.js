@@ -16,6 +16,14 @@ app.use(bodyparser.urlencoded({
   extended: false
 }));
 
+
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept , Authorization");
+  next();
+});
+
 app.use(cookieparser());
 
 /*  Mysql Configuration */
@@ -197,6 +205,9 @@ var createquery = function(query){
                                console.log(err);  
                                 return reject('Error');
                              }
+                         if(!result.length){
+				return reject('Error');			
+}
 resolve(result);     
                       })
               });
@@ -205,6 +216,40 @@ resolve(result);
   });
 
 }
+
+
+
+
+
+
+
+var createqueryforinsert = function(query){
+
+ return new Promise(function(resolve,reject){
+
+    pool.getConnection(function(err,connection){
+                    if(err)
+                        return reject('Error in connection');
+                      connection.query(query,function(err,result){
+                            if(err){
+                               console.log(err);  
+                                return reject('Error');
+                             }
+                       
+
+resolve(result);     
+                      })
+              });
+
+
+  });
+
+}
+
+
+
+
+
 
 
 
@@ -254,7 +299,7 @@ app.post('/loginuser',function(req,res){
                      var userid = rows[0].user_id;
   
                       if (returnpassword == password){
-                            var token = jwt.sign({userid:userid,username:username,role:roles}, secret);
+                            var token = jwt.sign({userid:userid,username:username,role:roles}, secret,{ expiresIn: '24h' });
                             var obj = {
                               'token':token,
                               'username': username,
@@ -381,7 +426,10 @@ app.post('/createallergi',function(req,res){
 app.post('/getpatientdetails',authorize(Roles.Doctor),function(req,res){
 
 var patientmrnumber = req.body.patientmrnumber;
-getpatientdetails(patientmrnumber).then(function(result){
+var sqlquery = "select * from patient inner join patient_vitals on  patient.patientid = patient_vitals.patientid where patient.mr_no='"+patientmrnumber+"' or telephone1='"+patientmrnumber+"' or telephone2='"+patientmrnumber+"';";
+
+
+createquery(sqlquery).then(function(result){
     res.send(result);
 
 }).catch(function(err){
@@ -389,7 +437,10 @@ getpatientdetails(patientmrnumber).then(function(result){
     res.write("Error");
     res.end();
 
+
 });
+
+
 
 
 
@@ -402,11 +453,12 @@ var date = req.body.date;
 var patientid = req.body.patientid;
 
 var sqlquery = "insert into notes(notetext,notedate,patientid) values ('"+note+"','"+date+"','"+patientid+"')";
-createquery(sqlquery).then(function(result){
-
+createqueryforinsert(sqlquery).then(function(result){
+     console.log("result",result);		
      res.send(result);
 
 }).catch(function(err){
+    console.log("error",err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -563,6 +615,119 @@ res.send(patientmrnumber);
 
 
 });
+
+
+
+
+app.get('/getallergi',function(req,res){
+
+var sqlquery = "select * from allergies";
+createquery(sqlquery).then(function(result){
+    res.send(result);
+
+}).catch(function(err){
+    res.writeHead(404);
+    res.write("Error");
+    res.end();
+
+
+});
+
+
+
+
+})
+
+
+
+app.post('/addemployee',function(req,res){
+
+
+
+
+});
+
+
+app.post('/deleteemployee',function(req,res){
+
+var username = req.body.username;
+var password = req.body.password;
+var adminusername = req.body.adminusername;
+var sqlqueryforpasswordcheck = "select password from usertable where name='"+adminusername+"'";
+var sqlquery = "delete * from usertable where name='"+username+"'";
+
+
+createquery(sqlqueryforpasswordcheck)
+.then(function(result){
+                     console.log("Password",password);
+                     var returnpassword = rows[0].password;
+                     consolelog("Return password",returnpassword);
+                     if (returnpassword === 'admin')
+                       {
+                       console.log("Reach here");
+
+}
+
+
+})
+// .then(function(password){
+//  console.log("Reach here",password);
+// return  createqueryforinsert(sqlquery)
+
+
+
+.catch(function(err){
+    res.writeHead(404);
+    res.write("Error",err);
+    res.end();
+
+
+});
+
+
+});
+
+
+app.post('/updatepassword',function(req,res){
+
+var password = req.body.password;
+var username= req.body.username;
+
+var sqlquery = "update usertable set password='"+password +"' where username='"+username+"'";
+createqueryforinsert(sqlquery).then(function(result){
+	res.send(result);
+
+}).catch(function(err){
+
+	res.writeHead(404);
+	res.write("Error");	
+
+});
+
+})
+
+
+
+app.post('/getnotes',function(req,res){
+
+var date = req.body.dates;
+var patientid = req.body.patientid;
+console.log("date",date);
+var sqlquery = "select * from notes where notedate='"+date+"' and patientid='"+patientid+"'";
+createquery(sqlquery).then(function(result){
+        console.log(result);
+        res.send(result);
+
+}).catch(function(err){
+
+        res.writeHead(404);
+        res.write("Error");     
+
+});
+
+
+})
+
 
 app.listen(port);
 
