@@ -19,3 +19,54 @@ SET MESSAGE_TEXT = 'Patient MR Number Exist';
 END IF;
 
  END
+
+
+
+
+ /* Delete User  */
+
+
+ CREATE Procedure deleteuserprocedure (IN delusername varchar(255), IN adminpassword varchar(255))
+
+
+BEGIN
+
+IF  EXISTS (select name from usertable where password = adminpassword) THEN
+
+
+delete from usertable where username = delusername ;
+
+ELSE
+
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Password is incorrect or user not found';
+
+END IF;
+
+ END
+
+
+
+
+ /* Add User */
+
+CREATE Procedure adduserprocedure (IN newusername varchar(255), IN userpassword varchar(255), IN userrole varchar(255))
+
+
+BEGIN
+
+IF NOT EXISTS (select name from usertable where password = userpassword) THEN
+
+insert into usertable (name,password,role) values (newusername,userpassword,userrole);
+
+ELSE
+
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'User already exist with this username';
+
+END IF;
+
+ END
+
+
+

@@ -484,7 +484,7 @@ createqueryforinsert(sqlquery).then(function(result){
 
 
 
-app.post('/createuser',function(req,res){
+app.post('/createuser',authorize(Roles.Admin),function(req,res){
 
 var name  = req.body.fullname;
 var password = req.body.password;
@@ -492,20 +492,7 @@ var role = req.body.role;
 
 
 
-var sqlquery = "Insert into usertable(name,password,role) values ('"+name+"','"+password+"','"+role+"')" ;
-// console.log(pool);
-// pool.getConnection(function(err,connection){
-
-// 	if(err) 
-// 		res.send("Problem in connecting with database . Try later");
-// 	connection.query(sqlquery,function(err,result){
-// 	if(err)
-// 		res.send(err);
-// 	res.send("User created");
-
-// 	});
-
- // });
+var sqlquery = "CALL adduserprocedure('"+name+"','"+password+"','"+role+"')" ;
 
 createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
@@ -533,18 +520,6 @@ app.get('/getalluser',authorize(Roles.Admin),function(req,res){
 
 
 var sqlquery = "select * from usertable";
-// pool.getConnection(function(err,connection){
-// 	if(err)
-//       res.send("Unable to connect");
-//     connection.query(sqlquery,function(err,result){
-//     	if(!err)
-//     		res.send(result);
-
-// 		});
-
-
-// 	});
-
 createquery(sqlquery).then(function(result){
   res.send(result);
 
@@ -647,55 +622,31 @@ createquery(sqlquery).then(function(result){
 
 
 
-app.post('/addemployee',function(req,res){
-
-
-
-
-});
-
-
-app.post('/deleteemployee',function(req,res){
+app.post('/deleteuser',function(req,res){
 
 var username = req.body.username;
 var password = req.body.password;
 var adminusername = req.body.adminusername;
-var sqlqueryforpasswordcheck = "select password from usertable where name='"+adminusername+"'";
-var sqlquery = "delete * from usertable where name='"+username+"'";
 
+var sqlquery = "CALL deleteuserprocedure('"+username+"','"+password+"')";
 
-createquery(sqlqueryforpasswordcheck)
-.then(function(result){
-                     console.log("Password",password);
-                     var returnpassword = rows[0].password;
-                     consolelog("Return password",returnpassword);
-                     if (returnpassword === 'admin')
-                       {
-                       console.log("Reach here");
+createqueryforinsert(sqlquery).then(function(result){
+    res.send(result);
 
-}
-
-
-})
-// .then(function(password){
-//  console.log("Reach here",password);
-// return  createqueryforinsert(sqlquery)
-
-
-
-.catch(function(err){
+}).catch(function(err){
     res.writeHead(404);
-    res.write("Error",err);
+    res.write("Error");
     res.end();
 
 
 });
 
 
+
 });
 
 
-app.post('/updatepassword',function(req,res){
+app.post('/updateuserpassword',function(req,res){
 
 var password = req.body.password;
 var username= req.body.username;
