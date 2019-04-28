@@ -50,12 +50,12 @@ END IF;
 
  /* Add User */
 
-CREATE Procedure adduserprocedure (IN newusername varchar(255), IN userpassword varchar(255), IN userrole varchar(255))
+CREATE Procedure adduserprocedures (IN newusername varchar(255), IN userpassword varchar(255), IN userrole varchar(255))
 
 
 BEGIN
 
-IF NOT EXISTS (select name from usertable where password = userpassword) THEN
+IF NOT EXISTS (select password from usertable where name = newusername) THEN
 
 insert into usertable (name,password,role) values (newusername,userpassword,userrole);
 

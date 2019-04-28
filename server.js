@@ -492,7 +492,7 @@ var role = req.body.role;
 
 
 
-var sqlquery = "CALL adduserprocedure('"+name+"','"+password+"','"+role+"')" ;
+var sqlquery = "CALL adduserprocedures('"+name+"','"+password+"','"+role+"')" ;
 
 createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
