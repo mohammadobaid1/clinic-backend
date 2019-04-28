@@ -26,15 +26,15 @@ END IF;
  /* Delete User  */
 
 
- CREATE Procedure deleteuserprocedure (IN delusername varchar(255), IN adminpassword varchar(255))
+ CREATE Procedure deleteuserprocedures (IN delusername varchar(255), IN adminpassword varchar(255),IN adminusername varchar(255))
 
 
 BEGIN
 
-IF  EXISTS (select name from usertable where password = adminpassword) THEN
+IF  EXISTS (select * from usertable where name=adminusername AND password = adminpassword AND role = 'Admin') THEN
 
 
-delete from usertable where username = delusername ;
+delete from usertable where name = delusername ;
 
 ELSE
 

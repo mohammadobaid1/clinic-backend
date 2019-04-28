@@ -625,10 +625,10 @@ createquery(sqlquery).then(function(result){
 app.post('/deleteuser',function(req,res){
 
 var username = req.body.username;
-var password = req.body.password;
-var adminusername = req.body.adminusername;
+var adminpassword = req.body.password;
+var adminusername = req.body.adminusername
 
-var sqlquery = "CALL deleteuserprocedure('"+username+"','"+password+"')";
+var sqlquery = "CALL deleteuserprocedures('"+username+"','"+adminpassword+"','"+adminusername+"')";
 
 createqueryforinsert(sqlquery).then(function(result){
     res.send(result);
