@@ -77,7 +77,7 @@ var createpatient = function(patientname,fathername,age,gender,telephone1,teleph
 
 return new Promise(function(resolve,reject){
 
-            var sqlquery = "insert into patient(patientname,fathername,age,gender,telephone1,telephone2,mr_no) values ('"+patientname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
+            var sqlquery = "CALL insertpatientprocedure ('"+patientname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
               pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
@@ -305,9 +305,7 @@ app.post('/loginuser',function(req,res){
                               'username': username,
                               'roles':roles
                             }
-                            // res.cookie('token', token, { httpOnly: true })
-                            //  .sendStatus(200);
-                            //  res.end();
+                            
                             res.writeHead(200);
                             res.write(JSON.stringify(obj));
                             res.end();
@@ -376,19 +374,29 @@ var patientid = req.body.patientid;
 
 
 
-addpatientvital(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergiid,patientid).then(function(result){
+// addpatientvital(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergiid,patientid).then(function(result){
 
-              res.writeHead(200);
-              res.write("Record Inserted")
-              res.end();
+//               res.writeHead(200);
+//               res.write("Record Inserted")
+//               res.end();
+
+// }).catch(function(err){
+//       console.log(err);
+//       res.writeHead(404);
+//       res.write("Error");
+//       res.end();
+// });
+
+  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergieid,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiid+"','"+patientid+"')";
+createqueryforinsert(sqlquery).then(function(result){
+  res.send(result);
 
 }).catch(function(err){
-      console.log(err);
-      res.writeHead(404);
-      res.write("Error");
-      res.end();
-});
 
+  res.writeHead(404);
+  res.write("Error");  
+
+});
 
 
 
@@ -485,19 +493,29 @@ var role = req.body.role;
 
 
 var sqlquery = "Insert into usertable(name,password,role) values ('"+name+"','"+password+"','"+role+"')" ;
-console.log(pool);
-pool.getConnection(function(err,connection){
+// console.log(pool);
+// pool.getConnection(function(err,connection){
 
-	if(err) 
-		res.send("Problem in connecting with database . Try later");
-	connection.query(sqlquery,function(err,result){
-	if(err)
-		res.send(err);
-	res.send("User created");
+// 	if(err) 
+// 		res.send("Problem in connecting with database . Try later");
+// 	connection.query(sqlquery,function(err,result){
+// 	if(err)
+// 		res.send(err);
+// 	res.send("User created");
 
-	});
+// 	});
 
- });
+ // });
+
+createqueryforinsert(sqlquery).then(function(result){
+  res.send(result);
+
+}).catch(function(err){
+
+  res.writeHead(404);
+  res.write("Error");  
+
+});
 
 
 });
@@ -514,18 +532,29 @@ app.get('/getalluser',authorize(Roles.Admin),function(req,res){
 
 
 
-var sqlquery = "select * from superadmin";
-pool.getConnection(function(err,connection){
-	if(err)
-      res.send("Unable to connect");
-    connection.query(sqlquery,function(err,result){
-    	if(!err)
-    		res.send(result);
+var sqlquery = "select * from usertable";
+// pool.getConnection(function(err,connection){
+// 	if(err)
+//       res.send("Unable to connect");
+//     connection.query(sqlquery,function(err,result){
+//     	if(!err)
+//     		res.send(result);
 
-		});
+// 		});
 
 
-	});
+// 	});
+
+createquery(sqlquery).then(function(result){
+  res.send(result);
+
+}).catch(function(err){
+
+  res.writeHead(404);
+  res.write("Error");  
+
+});
+
 
 });
 
@@ -553,28 +582,6 @@ createquery(sqlquery).then(function(result){
 
 
 
-app.post('/createuser',authorize(Roles.Admin),function(req,res){
-
-var name  = req.body.fullname;
-var password = req.body.password;
-var email = req.body.email;
-var telephone = req.body.telephone;
-var role = req.body.role;
-
-var sqlquery = "Insert into usertable(name,password,email,telephone,role) values('"+name+"','"+password+"','"+email+"','"+telephone+"','"+role+"')";
-pool.getConnection(function(err,connection){
-
-if(err)
-	res.send("Error in establishing connection");
-connection.query(sqlquery,function(err,result){
-   if(!err)
-   	res.send("User Created");
-
-		});
-
-	});
-
-});
 
 
 
