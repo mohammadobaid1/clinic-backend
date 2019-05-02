@@ -651,7 +651,7 @@ app.post('/updateuserpassword',function(req,res){
 var password = req.body.password;
 var username= req.body.username;
 
-var sqlquery = "update usertable set password='"+password +"' where username='"+username+"'";
+var sqlquery = "update usertable set password='"+password +"' where name='"+username+"'";
 createqueryforinsert(sqlquery).then(function(result){
 	res.send(result);
 
