@@ -687,6 +687,27 @@ createquery(sqlquery).then(function(result){
 })
 
 
+
+app.get('/viewsearchpatient',function(req,res){
+
+
+var sqlquery = "select * from patient";
+createquery(sqlquery).then(function(result){
+        console.log(result);
+        res.send(result);
+
+}).catch(function(err){
+
+        res.writeHead(404);
+        res.write("Error");     
+
+});
+
+
+
+});
+
+
 app.listen(port);
 
 
