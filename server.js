@@ -369,7 +369,7 @@ var pulse = req.body.pulse;
 var temperature = req.body.temperature;
 var po2 = req.body.po2;
 var datetimes = req.body.datetimes;
-var allergiid = req.body.allergiid;
+var allergie = req.body.allergie;
 var patientid = req.body.patientid;
 
 
@@ -387,7 +387,7 @@ var patientid = req.body.patientid;
 //       res.end();
 // });
 
-  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergieid,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiid+"','"+patientid+"')";
+  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiie+"','"+patientid+"')";
 createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
 
