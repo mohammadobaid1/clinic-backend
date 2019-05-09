@@ -126,7 +126,7 @@ var addpatientvital = function(height,weight,bloodpressure,pulse,temperature,po2
 
 return new Promise (function(resolve,reject){
 
-  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergieid,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiid+"','"+patientid+"')";
+  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergie,patientid) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiid+"','"+patientid+"')";
    pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
@@ -387,7 +387,7 @@ var patientid = req.body.patientid;
 //       res.end();
 // });
 
-  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+allergiie+"','"+patientid+"')";
+  var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+patientid+"','"+allergie+"')";
 createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
 
