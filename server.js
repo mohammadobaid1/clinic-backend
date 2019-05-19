@@ -73,11 +73,11 @@ var loginfunction = function(username,password,rolename){
 }
 
 
-var createpatient = function(patientname,fathername,age,gender,telephone1,telephone2,mrno){
+var createpatient = function(patientname,fathername,age,gender,telephone1,telephone2,mrno,patientlastname){
 
 return new Promise(function(resolve,reject){
 
-            var sqlquery = "CALL insertpatientprocedure ('"+patientname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
+            var sqlquery = "CALL insertpatientprocedure ('"+patientname+"','"+patientlastname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
               pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
@@ -332,6 +332,7 @@ app.post('/loginuser',function(req,res){
 app.post('/addpatient',authorize(Roles.Receptionist),function(req,res){
 
 var patientname = req.body.patientname;
+var patientlastname = req.body.patientlastname;
 var patientfather = req.body.patientfathername;
 var age = req.body.age;
 var gender = req.body.gender;
@@ -340,7 +341,7 @@ var telephone2 = req.body.telephone2;
 var mrnumber = req.body.mrnumber;
 
 
-createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumber).then(function(result) {
+createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumber,patientlastname).then(function(result) {
 
               res.writeHead(200);
               res.write("Record Inserted")
@@ -372,20 +373,6 @@ var datetimes = req.body.datetimes;
 var allergie = req.body.allergie;
 var patientid = req.body.patientid;
 
-
-
-// addpatientvital(height,weight,bloodpressure,pulse,temperature,po2,datetimes,allergiid,patientid).then(function(result){
-
-//               res.writeHead(200);
-//               res.write("Record Inserted")
-//               res.end();
-
-// }).catch(function(err){
-//       console.log(err);
-//       res.writeHead(404);
-//       res.write("Error");
-//       res.end();
-// });
 
   var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+patientid+"','"+allergie+"')";
 createqueryforinsert(sqlquery).then(function(result){
@@ -666,7 +653,7 @@ createqueryforinsert(sqlquery).then(function(result){
 
 
 
-app.post('/getnotes',function(req,res){
+app.post('/getnotes',authorize(Roles.Doctor),function(req,res){
 
 var date = req.body.dates;
 var patientid = req.body.patientid;
@@ -688,7 +675,7 @@ createquery(sqlquery).then(function(result){
 
 
 
-app.get('/viewsearchpatient',function(req,res){
+app.get('/viewsearchpatient',authorize(Roles.Doctor),function(req,res){
 
 
 var sqlquery = "select * from patient";

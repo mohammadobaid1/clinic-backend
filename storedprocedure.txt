@@ -1,6 +1,6 @@
  /* Insert Patient */
 
- CREATE Procedure insertpatientprocedure (IN patientnames varchar(255),IN fathernames varchar(255), IN ages varchar(255),IN genders varchar(255),IN telephone1s varchar(255),IN telephone2s varchar(255), IN mrnos varchar(255))
+ CREATE Procedure insertpatientprocedureiteration (IN patientnames varchar(255),IN patientlastnames varchar(255),IN fathernames varchar(255), IN ages varchar(255),IN genders varchar(255),IN telephone1s varchar(255),IN telephone2s varchar(255), IN mrnos varchar(255))
 
 
 BEGIN
@@ -8,7 +8,7 @@ BEGIN
 IF NOT EXISTS (select patientid from patient where mr_no = mrnos) THEN
 
 
-insert into patient(patientname,fathername,age,gender,telephone1,telephone2,mr_no) values (patientnames,fathernames,ages,genders,telephone1s,telephone2s,mrnos);
+insert into patient(patientname,fathername,age,gender,telephone1,telephone2,mr_no,patientlastname) values (patientnames,fathernames,ages,genders,telephone1s,telephone2s,mrnos,patientlastnames);
 
 
 ELSE
