@@ -7,6 +7,8 @@ var cors = require('cors');
 const jwt = require('jsonwebtoken');
 var cookieparser = require('cookie-parser');
 var randomstring = require("randomstring");
+var morgan  = require("morgan");
+var winston = require('./winston');
 const secret = "HospitalRun";
 const port = 3000;
 var currentTime = new Date();
@@ -16,6 +18,7 @@ app.use(bodyparser.urlencoded({
   extended: false
 }));
 
+app.use(morgan('combined', { stream: winston.stream }));
 
 
 app.use(function(req, res, next) {
@@ -61,7 +64,7 @@ var loginfunction = function(username,password,rolename){
                              if(!result.length){
                                      return reject('Error in fetch');
                              }
-                             console.log(result);  
+                             winston.log(result);  
                              resolve(result);     
                       })
               });
@@ -132,7 +135,7 @@ return new Promise (function(resolve,reject){
                         return reject('Error in connection');
                       connection.query(sqlquery,function(err,result){
                             if(err){
-                                console.log(err);   
+                                winston.error(err);   
                                 return reject('Error in inserting');
 }     
                         resolve(result);     
@@ -202,7 +205,7 @@ var createquery = function(query){
                         return reject('Error in connection');
                       connection.query(query,function(err,result){
                             if(err){
-                               console.log(err);  
+                               winston.error(err); 
                                 return reject('Error');
                              }
                          if(!result.length){
@@ -319,7 +322,7 @@ app.post('/loginuser',function(req,res){
                        }     
 
   }).catch(function(err){
-    console.log(err);
+    winston.error(err);
     res.writeHead(404);
     res.write('Error');
     res.end();
@@ -348,7 +351,7 @@ createpatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumbe
               res.end();
 
 }).catch(function(err){
-
+       winston.error(err);
        res.writeHead(404);
        res.write("Error");
        res.end();
@@ -379,7 +382,7 @@ createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
 
 }).catch(function(err){
-
+  winston.error(err);
   res.writeHead(404);
   res.write("Error");  
 
@@ -401,6 +404,7 @@ app.post('/createallergi',function(req,res){
               res.end();
 
   }).catch(function(error){
+    winston.error(err);
      res.writeHead(404);
       res.write("Error");
       res.end();
@@ -428,6 +432,7 @@ createquery(sqlquery).then(function(result){
     res.send(result);
 
 }).catch(function(err){
+    winston.error(err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -453,7 +458,7 @@ createqueryforinsert(sqlquery).then(function(result){
      res.send(result);
 
 }).catch(function(err){
-    console.log("error",err);
+    winston.error(err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -485,7 +490,7 @@ createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
 
 }).catch(function(err){
-
+  winston.error(err);
   res.writeHead(404);
   res.write("Error");  
 
@@ -511,7 +516,7 @@ createquery(sqlquery).then(function(result){
   res.send(result);
 
 }).catch(function(err){
-
+  winston.error(err);
   res.writeHead(404);
   res.write("Error");  
 
@@ -529,6 +534,7 @@ createquery(sqlquery).then(function(result){
     res.send(result);
 
 }).catch(function(err){
+    winston.error(err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -595,6 +601,7 @@ createquery(sqlquery).then(function(result){
     res.send(result);
 
 }).catch(function(err){
+    winston.error(err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -621,6 +628,7 @@ createqueryforinsert(sqlquery).then(function(result){
     res.send(result);
 
 }).catch(function(err){
+    winston.error(err);
     res.writeHead(404);
     res.write("Error");
     res.end();
@@ -664,7 +672,7 @@ createquery(sqlquery).then(function(result){
         res.send(result);
 
 }).catch(function(err){
-
+        winston.error(err); 
         res.writeHead(404);
         res.write("Error");     
 
@@ -684,7 +692,7 @@ createquery(sqlquery).then(function(result){
         res.send(result);
 
 }).catch(function(err){
-
+        winston.error(err);
         res.writeHead(404);
         res.write("Error");     
 
