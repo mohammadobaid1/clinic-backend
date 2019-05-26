@@ -100,6 +100,32 @@ return new Promise(function(resolve,reject){
 }
 
 
+
+var updatepatient = function(patientname,fathername,age,gender,telephone1,telephone2,mrno,patientlastname,patientid){
+
+return new Promise(function(resolve,reject){
+
+            var sqlquery = "update patient set patientname ='"+patientname+"',patientlastname='"+patientlastname+"',fathername='"+fathername+"',age='"+age+"',gender='"+gender+"',telephone1='"+telephone1+"',telephone2='"+telephone2+"',mr_no='"+mrno+"' where patientid='"+patientid+"'";
+              pool.getConnection(function(err,connection){
+                    if(err)
+                        return reject('Error in connection');
+                      connection.query(sqlquery,function(err,result){
+                            if(err)
+        {    
+                                return reject('Error in updating');
+                            }
+       resolve(result);     
+                      })
+              });
+
+
+
+})
+
+}
+
+
+
 var patientid = function(patientmrno){
 
 return new Promise(function(resolve,reject){
@@ -701,6 +727,74 @@ createquery(sqlquery).then(function(result){
 
 
 });
+
+
+app.post('/editpatientdetails',function(req,res){
+
+var patientid = req.body.patientid;
+var patientname = req.body.patientname;
+var patientlastname = req.body.patientlastname;
+var patientfather = req.body.patientfathername;
+var age = req.body.age;
+var gender = req.body.gender;
+var telephone1 = req.body.telephone1;
+var telephone2 = req.body.telephone2;
+var mrnumber = req.body.mrnumber;
+
+
+updatepatient(patientname,patientfather,age,gender,telephone1,telephone2,mrnumber,patientlastname,patientid).then(function(result) {
+
+              res.writeHead(200);
+              res.write("Record Updated")
+              res.end();
+
+}).catch(function(err){
+       winston.error(err);
+       res.writeHead(404);
+       res.write("Error");
+       res.end();
+});
+
+
+
+
+
+});
+
+
+
+
+app.post('/editpatientvitals',function(req,res){
+
+var vitalsid = req.body.vitalsid;
+var height = req.body.heights;
+var weight = req.body.weight;
+var bloodpressure = req.body.bloodpressure;
+var pulse = req.body.pulse;
+var temperature = req.body.temperature;
+var po2 = req.body.po2;
+var datetimes = req.body.datetimes;
+var allergie = req.body.allergie;
+var patientid = req.body.patientid;
+
+
+var sqlquery = "update patient_vitals set height ='"+height+"',weight='"+weight+"',bloodpressure='"+bloodpressure+"',pulse='"+pulse+"',temperature='"+temperature+"',po2='"+po2+"',datetimes='"+datetimes+"',allergie='"+allergies+"' where vitals_id='"+vitalsid+"' OR patientid='"+patientid+"'";
+createqueryforinsert(sqlquery).then(function(result){
+  res.send(result);
+
+}).catch(function(err){
+  winston.error(err);
+  res.writeHead(404);
+  res.write("Error");  
+
+});
+
+
+
+
+
+});
+
 
 
 app.listen(port);
