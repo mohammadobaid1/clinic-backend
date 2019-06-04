@@ -80,7 +80,25 @@ var createpatient = function(patientname,fathername,age,gender,telephone1,teleph
 
 return new Promise(function(resolve,reject){
 
-            var sqlquery = "CALL insertpatientprocedureiteration ('"+patientname+"','"+patientlastname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
+            var sqlquery = "CALL CREATE Procedure insertpatientprocedureiteration (IN patientnames varchar(255),IN patientlastnames varchar(255),IN fathernames varchar(255), IN ages varchar(255),IN genders varchar(255),IN telephone1s varchar(255),IN telephone2s varchar(255), IN mrnos varchar(255))
+
+
+BEGIN
+
+IF NOT EXISTS (select patientid from patient where mr_no = mrnos) THEN
+
+
+insert into patient(patientname,fathername,age,gender,telephone1,telephone2,mr_no,patientlastname) values (patientnames,fathernames,ages,genders,telephone1s,telephone2s,mrnos,patientlastnames);
+
+
+ELSE
+
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Patient MR Number Exist';
+
+END IF;
+
+ END ('"+patientname+"','"+patientlastname+"','"+fathername+"','"+age+"','"+gender+"','"+telephone1+"','"+telephone2+"','"+mrno+"')";
               pool.getConnection(function(err,connection){
                     if(err)
                         return reject('Error in connection');
@@ -474,15 +492,11 @@ createquery(sqlquery).then(function(result){
 
 app.post('/addnote',authorize(Roles.Doctor),function(req,res){
 
-var userobject = req.user;
 var note = req.body.note;
 var date = req.body.date;
 var patientid = req.body.patientid;
-var doctorid = req.user.userid;
-var doctorname = req.user.username;
-console.log("doctorname",doctorname);
 
-var sqlquery = "insert into notes(notetext,notedate,patientid,doctorname,doctorid) values ('"+note+"','"+date+"','"+patientid+"','"+doctorname+"','"+doctorid+"')";
+var sqlquery = "insert into notes(notetext,notedate,patientid) values ('"+note+"','"+date+"','"+patientid+"')";
 createqueryforinsert(sqlquery).then(function(result){
      console.log("result",result);		
      res.send(result);
@@ -646,13 +660,12 @@ createquery(sqlquery).then(function(result){
 
 
 
-app.post('/deleteuser',authorize(Roles.Admin),function(req,res){
+app.post('/deleteuser',function(req,res){
 
 var username = req.body.username;
 var adminpassword = req.body.password;
-//var adminusername = req.body.adminusername
+var adminusername = req.body.adminusername
 
-var adminusername = req.user.username;
 var sqlquery = "CALL deleteuserprocedures('"+username+"','"+adminpassword+"','"+adminusername+"')";
 
 createqueryforinsert(sqlquery).then(function(result){
@@ -672,7 +685,7 @@ createqueryforinsert(sqlquery).then(function(result){
 });
 
 
-app.post('/updateuserpassword',authorize(Roles.Admin),function(req,res){
+app.post('/updateuserpassword',function(req,res){
 
 var password = req.body.password;
 var username= req.body.username;
