@@ -207,7 +207,7 @@ var getpatientdetails = function(patientmrnumber){
                       connection.query(sqlquery,function(err,result){
                             if(err){
                                 console.log(err);
-                                return reject('Error in inserting');
+                                return reject('Error in reading');
                                           
 
                           }
@@ -288,13 +288,15 @@ function authorize(roles = []){
         roles = [roles];
     }
 
+    console.log("roles",roles);
 
 
   return[
     expressjwt({secret}),
     (req,res,next)=>{
          if(roles.length && !roles.includes(req.user.role)){
-           
+        console.log(roles);
+       console.log("unauthorize",req.user.role);    
       res.send("Unauthorized");
        }
   next();
@@ -579,6 +581,28 @@ createquery(sqlquery).then(function(result){
 
 
 
+app.post('/searchmrnumberwithname',function(req,res){
+
+var searchmrnumber = req.body.searchmrnumber;
+var sqlquery = "select * from patient where mr_no='"+searchmrnumber+"' or telephone1='"+searchmrnumber+"' or telephone2='"+searchmrnumber+"' or patientname='"+searchmrnumber+"' or patientlastname='"+searchmrnumber+"'";
+createquery(sqlquery).then(function(result){
+    res.send(result);
+
+}).catch(function(err){
+    winston.error(err);
+    res.writeHead(404);
+    res.write("Error");
+    res.end();
+
+
+});
+
+
+
+});
+
+
+
 
 
 
@@ -714,22 +738,27 @@ createquery(sqlquery).then(function(result){
 
 
 
-app.get('/viewsearchpatient',authorize(Roles.Doctor),function(req,res){
+app.get('/viewsearchpatient',authorize([Roles.Doctor,Roles.Receptionist,Roles.Nurse]),function(req,res){
 
 
-var sqlquery = "select * from patient";
+var sqlquery = "select * from patient order by patientid desc";
 createquery(sqlquery).then(function(result){
-        console.log(result);
+        console.log('Result fetched');
         res.send(result);
+//        res.writeHead(200);
+//        res.write(result);
+        //res.writeHead(200);
+        //res.write('ahs');
+//        res.end();
 
 }).catch(function(err){
         winston.error(err);
         res.writeHead(404);
         res.write("Error");     
-
+        res.end();
 });
 
-
+     
 
 });
 
@@ -783,7 +812,9 @@ var allergie = req.body.allergie;
 var patientid = req.body.patientid;
 
 
-var sqlquery = "update patient_vitals set height ='"+height+"',weight='"+weight+"',bloodpressure='"+bloodpressure+"',pulse='"+pulse+"',temperature='"+temperature+"',po2='"+po2+"',datetimes='"+datetimes+"',allergie='"+allergies+"' where vitals_id='"+vitalsid+"' OR patientid='"+patientid+"'";
+var sqlquery = "update patient_vitals set height ='"+height+"',weight='"+weight+"',bloodpressure='"+bloodpressure+"',pulse='"+pulse+"',temperature='"+temperature+"',po2='"+po2+"',datetimes='"+datetimes+"',allergie='"+allergie+"' where vitals_id='"+vitalsid+"' OR patientid='"+patientid+"'";
+console.log('sqlquery',sqlquery);
+
 createqueryforinsert(sqlquery).then(function(result){
   res.send(result);
 
