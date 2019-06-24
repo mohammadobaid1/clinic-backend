@@ -271,7 +271,7 @@ var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,
                }
                console.log(result);
                vitalsinsertedid = result.insertId;
-               subarrayofallergies=[['allergie1'],['allergie2']];
+               subarrayofallergies=[['allergie3'],['allergie4']];
                connection.query("insert into allergies(allergiename) values (?)",subarrayofallergies,function(err,resultofallergies){
                  if(err){
                      connection.rollback(function(){
@@ -283,14 +283,15 @@ var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,
                  console.log(resultofallergies);
                  console.log("allergies length",resultofallergies.insertId);
             
-                 idoffirstallergy=resultofallergies.insertId;  
-                 for (var i=idoffirstallergy;i <= 15;i++){
+                 idoffirstallergy=resultofallergies.insertId;
+                 var totalitems = idoffirstallergy+2; 
+                 for (var i=idoffirstallergy;i < totalitems;i++){
                    console.log(i);
                    arryofallergies.push([vitalsinsertedid,i]);
                  }
                  console.log("array",arryofallergies);
-                 allergiesinsert=[1,99,16];
-                 connection.query("insert into patient_allergies(id,vitalsid,allergieid) values (?,?,?)",allergiesinsert,function(err,result){
+                 
+                 connection.query("insert into patient_allergies(vitalsid,allergieid) values (?,?)",arryofallergies,function(err,result){
                    if(err)
                        {
                  connection.rollback(function(){
