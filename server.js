@@ -454,7 +454,7 @@ app.post('/getpatientdetails',authorize(Roles.Doctor),function(req,res){
 
 var patientmrnumber = req.body.patientmrnumber;
 var sqlquery = "select * from patient inner join patient_vitals on  patient.patientid = patient_vitals.patientid where patient.mr_no='"+patientmrnumber+"' or telephone1='"+patientmrnumber+"' or telephone2='"+patientmrnumber+"';";
-
+//var sqlquery =  "select patient.patientid,patient.mr_no,patient.patientname,patient.age,patient_vitals.datetimes,patient_vitals.bloodpressure,patient_vitals.height,patient_vitals.po2,patient_vitals.pulse,patient_vitals.weight,patient_vitals.allergie,notes.diagnosis from ((patient inner join patient_vitals on patient.patientid=patient_vitals.patientid) inner join notes on patient.patientid=notes.patientid) where patient.mr_no='"+patientmrnumber+"' or telephone1='"+patientmrnumber+"' or telephone2='"+patientmrnumber+"' order by patient_vitals.datetimes desc;";
 
 createquery(sqlquery).then(function(result){
     res.send(result);
@@ -479,12 +479,14 @@ app.post('/addnote',authorize(Roles.Doctor),function(req,res){
 var userobject = req.user;
 var note = req.body.note;
 var date = req.body.date;
+var doctordiagnosis = req.body.diagnosis;
 var patientid = req.body.patientid;
 var doctorid = req.user.userid;
 var doctorname = req.user.username;
 console.log("doctorname",doctorname);
 
-var sqlquery = "insert into notes(notetext,notedate,patientid,doctorname,doctorid) values ('"+note+"','"+date+"','"+patientid+"','"+doctorname+"','"+doctorid+"')";
+var sqlquery = "insert into notes(notetext,notedate,patientid,doctorname,doctorid,diagnosis) values ('"+note+"','"+date+"','"+patientid+"','"+doctorname+"','"+doctorid+"','"+doctordiagnosis+"')";
+console.log("sqlquery",sqlquery);
 createqueryforinsert(sqlquery).then(function(result){
      console.log("result",result);		
      res.send(result);
@@ -811,8 +813,9 @@ var datetimes = req.body.datetimes;
 var allergie = req.body.allergie;
 var patientid = req.body.patientid;
 
+console.log("vitalsid",vitalsid);
 
-var sqlquery = "update patient_vitals set height ='"+height+"',weight='"+weight+"',bloodpressure='"+bloodpressure+"',pulse='"+pulse+"',temperature='"+temperature+"',po2='"+po2+"',datetimes='"+datetimes+"',allergie='"+allergie+"' where vitals_id='"+vitalsid+"' OR patientid='"+patientid+"'";
+var sqlquery = "update patient_vitals set height ='"+height+"',weight='"+weight+"',bloodpressure='"+bloodpressure+"',pulse='"+pulse+"',temperature='"+temperature+"',po2='"+po2+"',datetimes='"+datetimes+"',allergie='"+allergie+"' where vitals_id='"+vitalsid+"' AND patientid='"+patientid+"'";
 console.log('sqlquery',sqlquery);
 
 createqueryforinsert(sqlquery).then(function(result){
