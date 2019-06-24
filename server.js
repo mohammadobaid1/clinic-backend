@@ -291,7 +291,7 @@ var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,
                  }
                  console.log("array",arryofallergies);
                  
-                 connection.query("insert into patient_allergies(vitalsid,allergieid) values (?,?)",arryofallergies,function(err,result){
+                 connection.query("insert into patient_allergies(vitalsid,allergieid) values (?,?)",[arryofallergies],function(err,result){
                    if(err)
                        {
                  connection.rollback(function(){
