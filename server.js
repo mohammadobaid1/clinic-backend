@@ -505,7 +505,13 @@ var allergie = req.body.allergie;
 var patientid = req.body.patientid;
 var allergiearray = ['allergie1','allergie2']
 
-transactionalquery(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergiearray);
+transactionalquery(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergiearray)
+.then(function(result){
+  console.log(result);
+})
+.catch(function(error){
+  consolelog(error);
+});
 
 //   var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+patientid+"','"+allergie+"')";
 // createqueryforinsert(sqlquery).then(function(result){
