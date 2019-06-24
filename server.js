@@ -312,6 +312,8 @@ var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,
           })
 
     });
+
+    });
 }
 
 
