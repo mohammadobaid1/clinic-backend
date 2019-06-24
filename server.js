@@ -247,6 +247,74 @@ resolve(result);
 }
 
 
+var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,rbs,datetimes,patientid,allergiearray){
+  var vitalsinsertedid;
+  var idoffirstallergy;
+  return new Promise(function(resolve,reject){
+      pool.getConnection(function(err,connection){
+        if(err)
+            return reject('Error in connection');
+         connection.beginTransaction(function(err){
+             if(err){
+               return reject('Error occured');
+
+             }
+             connection.query("insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid) values ?",[height,weight,bloodpressure,pulse,temperature,rbs,datetimes,patientid],function(err,result){
+               if(err)
+               {
+                 connection.rollback(function(){
+                   winston.error(err);
+                   reject("error");
+                 })
+               }
+
+               vitalsinsertedid = result.insertId;
+               subarrayofallergies=[['allergie1'],['allergie2']];
+               connection.query("insert into allergies(allergiename) values ?",subarrayofallergies,function(err,result){
+                 if(err){
+                     connection.rollback(function(){
+                     winston.error(err);
+                     reject("error");
+                 })  
+                 }
+
+                 console.log(result);
+                 var arryofallergies = [];
+                 idoffirstallergy=result.insertId;  
+                 for (i=idoffirstallergy;i < allergiearray.length;i++){
+                   arryofallergies.push([vitalsinsertedid,i]);
+                 }
+                 connection.query("insert into patient_alleriges(vitalsid,allergieid) values ?",arryofallergies,function(err,result){
+                   if(err)
+                       {
+                 connection.rollback(function(){
+                   winston.error(err);
+                   reject("error");
+                           })
+                       }
+
+
+                       connection.commit(function(err) {
+                        if (err) { 
+                          connection.rollback(function() {
+                            throw err;
+                          });
+                        }
+                        console.log('Transaction Completed Successfully.');
+                        connection.end();
+
+                      })
+
+                   })
+
+                })
+             }) 
+          })
+
+    });
+}
+
+
 
 
 
@@ -415,6 +483,40 @@ createqueryforinsert(sqlquery).then(function(result){
   res.write("Error");  
 
 });
+
+
+
+});
+
+
+
+
+app.post('/addpatientvitalswithallergie',authorize(Roles.Nurse),function(req,res){
+
+
+var height = req.body.heights;
+var weight = req.body.weight;
+var bloodpressure = req.body.bloodpressure;
+var pulse = req.body.pulse;
+var temperature = req.body.temperature;
+var po2 = req.body.po2;
+var datetimes = req.body.datetimes;
+var allergie = req.body.allergie;
+var patientid = req.body.patientid;
+var allergiearray = ['allergie1','allergie2']
+
+transactionalquery(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergiearray);
+
+//   var sqlquery = "insert into patient_vitals(height,weight,bloodpressure,pulse,temperature,po2,datetimes,patientid,allergie) values ('"+height+"','"+weight+"','"+bloodpressure+"','"+pulse+"','"+temperature+"','"+po2+"','"+datetimes+"','"+patientid+"','"+allergie+"')";
+// createqueryforinsert(sqlquery).then(function(result){
+//   res.send(result);
+
+// }).catch(function(err){
+//   winston.error(err);
+//   res.writeHead(404);
+//   res.write("Error");  
+
+// });
 
 
 
