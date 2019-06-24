@@ -271,8 +271,8 @@ var transactionalquery = function(height,weight,bloodpressure,pulse,temperature,
                }
                console.log(result);
                vitalsinsertedid = result.insertId;
-               subarrayofallergies=[['allergie3'],['allergie4']];
-               connection.query("insert into allergies(allergiename) values (?)",subarrayofallergies,function(err,resultofallergies){
+               subarrayofallergies=[['allergie4'],['allergie5']];
+               connection.query("insert into allergies(allergiename) values ?",[subarrayofallergies],function(err,resultofallergies){
                  if(err){
                      connection.rollback(function(){
                      winston.error(err);
